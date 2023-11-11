@@ -1,0 +1,63 @@
+%% Package dice2e: Draw simple dice symbols with pict2e
+%% Copyright (C) 2023 Davide Campagnari
+%%
+%% This work may be distributed and/or modified under the conditions
+%% of the LaTeX Project Public License, either version 1.3c of this
+%% license or (at your option) any later version. The latest version
+%% of this license is in
+%%    http://www.latex-project.org/lppl.txt
+%% and version 1.3c or later is part of all distributions of LaTeX
+%% version 2008 or later.
+%%
+%% This work has the LPPL maintenance status `author-maintained'.
+%%
+%% The Current Maintainer of this work is Davide Campagnari
+%%    <davide (dot) campa (at) gmail.com>
+%%
+%% This work consists of the file dice2e.sty only.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{dice2e}[2023-11-11 v0]
+
+\newcommand*{\dice}{\@ifstar\dice@black\dice@white}
+\DeclareOption{black}{\renewcommand*{\dice}{\@ifstar\dice@white\dice@black}}
+\ProcessOptions\relax
+
+\RequirePackage{pict2e}
+\RequirePackage{color}
+
+\newcommand*{\diceIIe@one}{\circle*{.2}}
+\newcommand*{\diceIIe@two}{\put(.21,.21){\circle*{.2}}\put(-.21,-.21){\circle*{.2}}}
+\newcommand*{\diceIIe@four}{\put(.21,.21){\circle*{.2}}\put(-.21,-.21){\circle*{.2}}\put(-.21,.21){\circle*{.2}}\put(.21,-.21){\circle*{.2}}}
+\newcommand*{\diceIIe@six}{%
+   \put(-.2,-.25){\circle*{.2}}\put(.2,-.25){\circle*{.2}}%
+   \put(-.2,0){\circle*{.2}}\put(.2,0){\circle*{.2}}%
+   \put(-.2,.25){\circle*{.2}}\put(.2,.25){\circle*{.2}}%
+}
+
+\newcommand*{\dice@white}{\def\diceIIe@bg{}\let\diceIIe@fg\relax\dice@IIe}
+\newcommand*{\dice@black}{\def\diceIIe@bg{\let\pIIe@strokeGraph\pIIe@fillGraph}\def\diceIIe@fg{\textcolor{white}}\dice@IIe}
+\newcommand*{\dice@IIe}[2][2ex]{%
+   \leavevmode
+   \lower.8\p@\hbox{%
+      \ifcase#2\relax\def\dice@IIe@{}% 0
+         \or\def\dice@IIe@{\diceIIe@one}% 1
+         \or\def\dice@IIe@{\diceIIe@two}% 2
+         \or\def\dice@IIe@{\diceIIe@one\diceIIe@two}% 3=1+2
+         \or\def\dice@IIe@{\diceIIe@four}% 4
+         \or\def\dice@IIe@{\diceIIe@one\diceIIe@four}% 5=1+4
+         \or\def\dice@IIe@{\diceIIe@six}% 6
+         \else\def\dice@IIe@{}% >6
+              \PackageError{dice2e}{Number too large}{\string\dice\space supports only numbers up to 6.}%
+      \fi
+      \@defaultunits\unitlength#1ex\relax\@nnil
+      \@picture(1,1)(-.5,-.5)%
+      \linethickness{.8\p@}%
+      {\diceIIe@bg\oval[.25](1,1)}%
+      \diceIIe@fg\dice@IIe@
+      \endpicture
+   }%
+}%
+
+\endinput
+
+

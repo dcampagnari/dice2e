@@ -16,10 +16,10 @@
 %%
 %% This work consists of the file dice2e.sty only.
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{dice2e}[2023-11-27 v0.1]
+\ProvidesPackage{dice2e}[2023-12-08 v0.2]
 
-\newcommand*{\dice}{\@ifstar\dice@black\dice@white}
-\DeclareOption{black}{\renewcommand*{\dice}{\@ifstar\dice@white\dice@black}}
+\newcommand*{\dice}{\leavevmode\begingroup\@ifstar\dice@black\dice@white}
+\DeclareOption{black}{\renewcommand*{\dice}{\begingroup\@ifstar\dice@white\dice@black}}
 \ProcessOptions\relax
 
 \RequirePackage{pict2e}
@@ -34,10 +34,9 @@
    \put(-.2,.25){\circle*{.2}}\put(.2,.25){\circle*{.2}}%
 }
 
-\newcommand*{\dice@white}{\def\diceIIe@bg{}\let\diceIIe@fg\relax\dice@IIe}
-\newcommand*{\dice@black}{\def\diceIIe@bg{\let\pIIe@strokeGraph\pIIe@fillGraph}\def\diceIIe@fg{\textcolor{white}}\dice@IIe}
+\newcommand*{\dice@white}{\let\diceIIe@bg\@gobble\let\diceIIe@fg\relax\dice@IIe}
+\newcommand*{\dice@black}{\def\diceIIe@bg##1{{\let\pIIe@strokeGraph\pIIe@fillGraph##1}}\def\diceIIe@fg{\textcolor{white}}\dice@IIe}
 \newcommand*{\dice@IIe}[2][2ex]{%
-   \leavevmode
    \@defaultunits\dimen@#1ex\relax\@nnil
    \lower.07742\dimen@\hbox{%
       \ifcase#2\relax\def\dice@IIe@{}% 0
@@ -51,12 +50,14 @@
               \PackageError{dice2e}{Number too large}{\string\dice\space supports only numbers up to 6.}%
       \fi
       \unitlength\dimen@
-      \@picture(1,1)(-.5,-.5)%
+      \@picture(1.07742,1.07742)(-.53871,-.53871)%
       \linethickness{.07742\unitlength}%
-      {\diceIIe@bg\oval[.25](1,1)}%
+      \oval[.25](1,1)%
+      \diceIIe@bg{\oval[.25](1,1)}%
       \diceIIe@fg\dice@IIe@
       \endpicture
    }%
+   \endgroup
 }%
 
 \endinput
